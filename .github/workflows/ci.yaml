@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -21,4 +24,57 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Unit Tests
-      run: mvn -V clean test
+      run: ./mvnw -V clean test
+    - name: Import Secrets
+      id: secrets
+      uses: hashicorp/vault-action@v2.4.3
+      with:
+        exportToken: true
+        exportEnv: true
+        method: jwt
+        url: ${{ secrets.VAULT_ADDR }}
+        role: cicd
+        secrets: |
+          kv/data/cicd/sonatype username | SONATYPE_USERNAME ;
+          kv/data/cicd/sonatype password | SONATYPE_PASSWORD ;
+          kv/data/cicd/gpg keyname | GPG_KEYNAME ;
+          kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
+          kv/data/cicd/gpg encryption_password | ENCRYPTION_PASSWORD ;
+    - name: Deploy to sonatype-snapshots
+      if: github.ref == 'refs/heads/develop'
+      run: |
+        set -e
+        cat > settings.xml <<EOF
+        <settings>
+          <servers>
+            <server>
+               <id>sonatype-snapshots</id>
+               <username>${SONATYPE_USERNAME}</username>
+               <password>${SONATYPE_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+        CURRENT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's| ||g' |  tr -d '\t')
+        if [ "${CURRENT_VERSION}" = "$(echo ${CURRENT_VERSION} | grep "\-SNAPSHOT")" ];then
+          ./mvnw -V deploy -s settings.xml -DskipTests=true -DserverId=sonatype-snapshots
+        fi
+    - name: Deploy to sonatype-releases
+      if: github.ref == 'refs/heads/main'
+      run: |
+        set -e
+        docker run \
+          --rm \
+          -e SONATYPE_USERNAME=${SONATYPE_USERNAME} \
+          -e SONATYPE_PASSWORD=${SONATYPE_PASSWORD} \
+          -e GPG_KEYNAME=${GPG_KEYNAME} \
+          -e GPG_PASSPHRASE=${GPG_PASSPHRASE} \
+          -e ENCRYPTION_PASSWORD=${ENCRYPTION_PASSWORD} \
+          -v ~/.m2:/root/.m2 \
+          -v "$PWD":/workspace \
+          -w /workspace \
+          making/deploy-sonatype
+    - name: Revoke token
+      if: always()
+      run: |
+        curl -X POST -s -H "X-Vault-Token: ${VAULT_TOKEN}" ${{ secrets.VAULT_ADDR }}/v1/auth/token/revoke-self
