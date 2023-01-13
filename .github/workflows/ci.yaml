@@ -39,7 +39,8 @@ jobs:
           kv/data/cicd/sonatype password | SONATYPE_PASSWORD ;
           kv/data/cicd/gpg keyname | GPG_KEYNAME ;
           kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
-          kv/data/cicd/gpg encryption_password | ENCRYPTION_PASSWORD ;
+          kv/data/cicd/gpg pubring.gpg | PUBRING_GPG ;
+          kv/data/cicd/gpg secring.gpg | SECRING_GPG ;
     - name: Deploy to sonatype-snapshots
       if: github.ref == 'refs/heads/develop'
       run: |
@@ -63,17 +64,36 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
-        docker run \
-          --rm \
-          -e SONATYPE_USERNAME=${SONATYPE_USERNAME} \
-          -e SONATYPE_PASSWORD=${SONATYPE_PASSWORD} \
-          -e GPG_KEYNAME=${GPG_KEYNAME} \
-          -e GPG_PASSPHRASE=${GPG_PASSPHRASE} \
-          -e ENCRYPTION_PASSWORD=${ENCRYPTION_PASSWORD} \
-          -v ~/.m2:/root/.m2 \
-          -v "$PWD":/workspace \
-          -w /workspace \
-          making/deploy-sonatype
+        echo ${PUBRING_GPG} | base64 -d > pubring.gpg
+        echo ${SECRING_GPG} | base64 -d > secring.gpg
+        cat > settings.xml <<EOF
+        <settings>
+          <servers>
+            <server>
+               <id>repo</id>
+               <username>${SONATYPE_USERNAME}</username>
+               <password>${SONATYPE_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+        mvn javadoc:jar \
+            source:jar \
+            package \
+            org.apache.maven.plugins:maven-gpg-plugin:1.6:sign \
+            org.sonatype.plugins:nexus-staging-maven-plugin:1.6.8:deploy \
+            -s settings.xml \
+            -Dgpg.executable=gpg \
+            -Dgpg.keyname=${GPG_KEYNAME} \
+            -Dgpg.passphrase=${GPG_PASSPHRASE} \
+            -Dgpg.defaultKeyring=false \
+            -Dgpg.publicKeyring=pubring.gpg \
+            -Dgpg.secretKeyring=secring.gpg \
+            -DserverId=repo \
+            -DnexusUrl=https://oss.sonatype.org \
+            -DautoReleaseAfterClose=true \
+            -DaltDeploymentRepository=repo::default::https://oss.sonatype.org/service/local/staging/deploy/maven2 \
+            -DskipTests=true
     - name: Revoke token
       if: always()
       run: |
