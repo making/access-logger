@@ -59,7 +59,7 @@ public class AccessLogger implements HttpExchangeRepository {
 		if (principal != null) {
 			log.append("user=").append(principal.getName()).append(" ");
 		}
-		log.append("timestamp=").append(httpExchange.getTimestamp()).append(" ");
+		log.append("ts=\"").append(httpExchange.getTimestamp()).append("\" ");
 		log.append("method=").append(request.getMethod()).append(" ");
 		log.append("url=").append(uri).append(" ");
 		log.append("status=").append(response.getStatus()).append(" ");
