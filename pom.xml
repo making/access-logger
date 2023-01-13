@@ -8,6 +8,7 @@
 	<artifactId>access-logger</artifactId>
 	<version>0.1.0</version>
 	<name>access-logger</name>
+	<description>Access Logger as a HttpExchangeRepository implementation</description>
 
 	<properties>
 		<java.version>17</java.version>
