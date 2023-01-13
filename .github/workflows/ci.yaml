@@ -39,8 +39,8 @@ jobs:
           kv/data/cicd/sonatype password | SONATYPE_PASSWORD ;
           kv/data/cicd/gpg keyname | GPG_KEYNAME ;
           kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
-          kv/data/cicd/gpg pubring.gpg | PUBRING_GPG ;
-          kv/data/cicd/gpg secring.gpg | SECRING_GPG ;
+          kv/data/cicd/gpg pubring | GPG_PUBRING ;
+          kv/data/cicd/gpg secring | GPG_SECRING ;
     - name: Deploy to sonatype-snapshots
       if: github.ref == 'refs/heads/develop'
       run: |
@@ -64,8 +64,8 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
-        echo ${PUBRING_GPG} | base64 -d > pubring.gpg
-        echo ${SECRING_GPG} | base64 -d > secring.gpg
+        echo ${GPG_PUBRING} | base64 -d > pubring.gpg
+        echo ${GPG_SECRING} | base64 -d > secring.gpg
         cat > settings.xml <<EOF
         <settings>
           <servers>
