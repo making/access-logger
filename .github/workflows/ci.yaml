@@ -24,7 +24,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Unit Tests
-      run: ./mvnw -V clean test
+      run: ./mvnw -V --no-transfer-progress clean test
     - name: Import Secrets
       id: secrets
       uses: hashicorp/vault-action@v2.4.3
@@ -58,14 +58,15 @@ jobs:
         EOF
         CURRENT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's| ||g' |  tr -d '\t')
         if [ "${CURRENT_VERSION}" = "$(echo ${CURRENT_VERSION} | grep "\-SNAPSHOT")" ];then
-          ./mvnw -V deploy -s settings.xml -DskipTests=true -DserverId=sonatype-snapshots
+          ./mvnw -V deploy -s settings.xml --no-transfer-progress -DskipTests=true -DserverId=sonatype-snapshots
         fi
     - name: Deploy to sonatype-releases
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
-        echo ${GPG_PUBRING} | base64 -d > pubring.gpg
-        echo ${GPG_SECRING} | base64 -d > secring.gpg
+        mkdir ${HOME}/.gnupg
+        echo ${GPG_PUBRING} | base64 -d > ${HOME}/pubring.gpg
+        echo ${GPG_SECRING} | base64 -d > ${HOME}/secring.gpg
         cat > settings.xml <<EOF
         <settings>
           <servers>
@@ -77,18 +78,17 @@ jobs:
           </servers>
         </settings>
         EOF
-        mvn javadoc:jar \
+        mvn -V \
+            javadoc:jar \
             source:jar \
             package \
             org.apache.maven.plugins:maven-gpg-plugin:3.0.1:sign \
             org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy \
+            --no-transfer-progress \
             -s settings.xml \
             -Dgpg.executable=gpg \
             -Dgpg.keyname=${GPG_KEYNAME} \
             -Dgpg.passphrase=${GPG_PASSPHRASE} \
-            -Dgpg.defaultKeyring=false \
-            -Dgpg.publicKeyring=./pubring.gpg \
-            -Dgpg.secretKeyring=./secring.gpg \
             -DserverId=repo \
             -DnexusUrl=https://oss.sonatype.org \
             -DautoReleaseAfterClose=true \
