@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import org.slf4j.Logger;
@@ -19,10 +20,18 @@ import org.springframework.util.CollectionUtils;
 public class AccessLogger implements HttpExchangeRepository {
 	private final Predicate<HttpExchange> filter;
 
+	private final BiConsumer<StringBuilder, HttpExchange> logCustomizer;
+
 	private final Logger log = LoggerFactory.getLogger("accesslog");
 
-	public AccessLogger(Predicate<HttpExchange> filter) {
+	public AccessLogger(Predicate<HttpExchange> filter, BiConsumer<StringBuilder, HttpExchange> logCustomizer) {
 		this.filter = filter;
+		this.logCustomizer = logCustomizer;
+	}
+
+	public AccessLogger(Predicate<HttpExchange> filter) {
+		this(filter, (builder, httpExchange) -> {
+		});
 	}
 
 	public AccessLogger() {
@@ -65,6 +74,7 @@ public class AccessLogger implements HttpExchangeRepository {
 		if (timeTaken != null) {
 			log.append("response_time=").append(timeTaken.toMillis()).append(" ");
 		}
+		this.logCustomizer.accept(log, httpExchange);
 		this.log.info(log.toString().trim());
 	}
 }
