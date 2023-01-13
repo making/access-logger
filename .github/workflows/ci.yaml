@@ -78,12 +78,13 @@ jobs:
           </servers>
         </settings>
         EOF
+        # org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy \
         mvn -V \
             javadoc:jar \
             source:jar \
             package \
             org.apache.maven.plugins:maven-gpg-plugin:3.0.1:sign \
-            org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy \
+            install \
             --no-transfer-progress \
             -s settings.xml \
             -Dgpg.executable=gpg \
