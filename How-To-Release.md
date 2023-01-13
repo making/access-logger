@@ -6,8 +6,8 @@ git merge develop
 
 # Create a tag and push it
 VERSION=$(./get-release-version.sh)
-git tag ${VERSION}
 git push origin main
+git tag ${VERSION}
 git push origin ${VERSION}
 
 # Merge main to develop and bump the version

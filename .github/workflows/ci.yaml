@@ -29,15 +29,16 @@ jobs:
         secrets: |
           kv/data/cicd/sonatype username | SONATYPE_USERNAME ;
           kv/data/cicd/sonatype password | SONATYPE_PASSWORD ;
-          kv/data/cicd/gpg private_key | GPG_PRIVATE_KEY ;
+          kv/data/cicd/gpg secring | GPG_SECRING ;
+          kv/data/cicd/gpg passphrase | GPG_PASSPHRASE ;
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-        gpg-private-key: ${{ steps.secrets.outputs.GPG_PRIVATE_KEY }}
-        gpg-passphrase: ''
+        gpg-private-key: ${{ steps.secrets.outputs.GPG_SECRING }}
+        gpg-passphrase: ${{ steps.secrets.outputs.GPG_PASSPHRASE }}
     - name: Unit Tests
       run: ./mvnw -V --no-transfer-progress clean test
     - name: Deploy to sonatype-snapshots
@@ -83,6 +84,7 @@ jobs:
             --no-transfer-progress \
             -s settings.xml \
             -DserverId=repo \
+            -Dgpg.passphrase=${GPG_PASSPHRASE} \
             -DnexusUrl=https://oss.sonatype.org \
             -DautoReleaseAfterClose=true \
             -DaltDeploymentRepository=repo::default::https://oss.sonatype.org/service/local/staging/deploy/maven2 \
