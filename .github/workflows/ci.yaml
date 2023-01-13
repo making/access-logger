@@ -65,8 +65,8 @@ jobs:
       run: |
         set -e
         mkdir -p ${HOME}/.gnupg/private-keys-v1.d
-        echo ${GPG_PUBRING} | base64 -d > ${HOME}/.gnupg/pubring.gpg
-        echo ${GPG_SECRING} | base64 -d > ${HOME}/.gnupg/private-keys-v1.d/${GPG_KEYNAME}.key
+        # echo ${GPG_PUBRING} | base64 -d > ${HOME}/.gnupg/pubring.gpg
+        # echo ${GPG_SECRING} | base64 -d > ${HOME}/.gnupg/private-keys-v1.d/${GPG_KEYNAME}.key
         cat > settings.xml <<EOF
         <settings>
           <servers>
@@ -79,6 +79,7 @@ jobs:
         </settings>
         EOF
         # org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy \
+        # -Dgpg.keyname=${GPG_KEYNAME} \
         mvn -V \
             javadoc:jar \
             source:jar \
