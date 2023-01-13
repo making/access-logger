@@ -64,9 +64,9 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
         set -e
-        mkdir ${HOME}/.gnupg
-        echo ${GPG_PUBRING} | base64 -d > ${HOME}/pubring.gpg
-        echo ${GPG_SECRING} | base64 -d > ${HOME}/secring.gpg
+        mkdir -p ${HOME}/.gnupg/private-keys-v1.d
+        echo ${GPG_PUBRING} | base64 -d > ${HOME}/.gnupg/pubring.gpg
+        echo ${GPG_SECRING} | base64 -d > ${HOME}/.gnupg/private-keys-v1.d/${GPG_KEYNAME}.key
         cat > settings.xml <<EOF
         <settings>
           <servers>
