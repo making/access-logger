@@ -83,8 +83,6 @@ jobs:
             install \
             --no-transfer-progress \
             -s settings.xml \
-            -Dgpg.executable=gpg \
-            -Dgpg.passphrase= \
             -DserverId=repo \
             -DnexusUrl=https://oss.sonatype.org \
             -DautoReleaseAfterClose=true \
