@@ -88,7 +88,6 @@ jobs:
             --no-transfer-progress \
             -s settings.xml \
             -Dgpg.executable=gpg \
-            -Dgpg.keyname=${GPG_KEYNAME} \
             -Dgpg.passphrase=${GPG_PASSPHRASE} \
             -DserverId=repo \
             -DnexusUrl=https://oss.sonatype.org \
