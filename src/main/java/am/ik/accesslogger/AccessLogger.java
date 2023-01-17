@@ -45,6 +45,9 @@ public class AccessLogger implements HttpExchangeRepository {
 
 	@Override
 	public void add(HttpExchange httpExchange) {
+		if (!log.isInfoEnabled()) {
+			return;
+		}
 		final Request request = httpExchange.getRequest();
 		final URI uri = request.getUri();
 		if (!filter.test(httpExchange)) {
