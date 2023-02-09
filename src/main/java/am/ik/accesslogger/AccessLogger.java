@@ -58,7 +58,10 @@ public class AccessLogger implements HttpExchangeRepository {
 		final Duration timeTaken = httpExchange.getTimeTaken();
 		final Map<String, List<String>> headers = request.getHeaders();
 		final StringBuilder log = new StringBuilder();
-		log.append("remote=").append(request.getRemoteAddress()).append(" ");
+		final String remoteAddress = request.getRemoteAddress();
+		if (remoteAddress != null) {
+			log.append("remote=").append(remoteAddress).append(" ");
+		}
 		if (principal != null) {
 			log.append("user=").append(principal.getName()).append(" ");
 		}
