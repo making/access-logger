@@ -63,7 +63,7 @@ public class AccessLogger implements HttpExchangeRepository {
 			log.append("remote=").append(remoteAddress).append(" ");
 		}
 		if (principal != null) {
-			log.append("user=").append(principal.getName()).append(" ");
+			log.append("user=\"").append(principal.getName()).append("\" ");
 		}
 		log.append("ts=\"").append(httpExchange.getTimestamp()).append("\" ");
 		log.append("method=").append(request.getMethod()).append(" ");
