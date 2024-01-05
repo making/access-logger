@@ -68,17 +68,17 @@ public class AccessLogger implements HttpExchangeRepository {
 		log.append("ts=\"").append(httpExchange.getTimestamp()).append("\" ");
 		log.append("method=").append(request.getMethod()).append(" ");
 		log.append("url=\"").append(uri).append("\" ");
-		log.append("status=").append(response.getStatus()).append(" ");
+		log.append("response_code=").append(response.getStatus()).append(" ");
 		final List<String> referer = headers.get("referer");
 		if (!CollectionUtils.isEmpty(referer)) {
 			log.append("referer=\"").append(referer.get(0)).append("\" ");
 		}
 		final List<String> userAgent = headers.get("user-agent");
 		if (!CollectionUtils.isEmpty(userAgent)) {
-			log.append("ua=\"").append(userAgent.get(0)).append("\" ");
+			log.append("user_agent=\"").append(userAgent.get(0)).append("\" ");
 		}
 		if (timeTaken != null) {
-			log.append("response_time=").append(timeTaken.toMillis()).append(" ");
+			log.append("duration=").append(timeTaken.toMillis()).append(" ");
 		}
 		this.logCustomizer.accept(log, httpExchange);
 		this.log.info(log.toString().trim());
