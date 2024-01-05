@@ -18,6 +18,7 @@ import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.util.CollectionUtils;
 
 public class AccessLogger implements HttpExchangeRepository {
+
 	private final Predicate<HttpExchange> filter;
 
 	private final BiConsumer<StringBuilder, HttpExchange> logCustomizer;
@@ -83,4 +84,5 @@ public class AccessLogger implements HttpExchangeRepository {
 		this.logCustomizer.accept(log, httpExchange);
 		this.log.info(log.toString().trim());
 	}
+
 }
