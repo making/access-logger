@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="LogToConsole" target="SYSTEM_OUT" follow="true">
+			<EcsLayout/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="DEBUG">
+			<AppenderRef ref="LogToConsole"/>
+		</Root>
+		<Logger name="com.jayway" level="INFO"/>
+	</Loggers>
+</Configuration>
