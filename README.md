@@ -64,3 +64,27 @@ In order to log all attributes, you also need to configure `management.httpexcha
 ```properties
 management.httpexchanges.recording.include=request_headers,response_headers,remote_address,principal,time_taken
 ```
+
+## How to customize
+
+```java
+AccessLogger accessLogger = AccessLoggerBuilder.accessLogger()
+	// Change the log level
+	.level(Level.INFO) // Default: INFO
+	// Change the logger name
+	.loggerName("accesslog") // Default: accessLog
+	// Enable structured logging via SLF4J key-value API
+	.addKeyValues(true) // Default: false
+	// Make log messages empty if structured logging is enabled
+	.emptyLogMessage(true) // Default: false
+	// Customize log message
+	.logCustomizer((builder, exchange) -> {})
+	// Customize logging Event
+	.loggingEventBuilderCustomizer((builder, exchange) -> builder)
+	// Filter the log message depending on the http request
+	.filter(httpExchange -> {
+		final String uri = httpExchange.getRequest().getUri().getPath();
+		return uri != null && !(uri.equals("/readyz") || uri.equals("/livez") || uri.startsWith("/actuator"));
+	})
+	.build();
+```
