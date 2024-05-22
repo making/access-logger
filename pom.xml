@@ -6,7 +6,7 @@
 
 	<groupId>am.ik.access-logger</groupId>
 	<artifactId>access-logger</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2-SNAPSHOT</version>
 	<name>access-logger</name>
 	<description>Access Logger as a HttpExchangeRepository implementation</description>
 
