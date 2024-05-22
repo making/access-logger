@@ -41,22 +41,6 @@ public class AppConfig {
 > [!NOTE]
 > `AccessLoggerBuilder` is available since 0.3.0 
 
-If Spring Security is enabled,
-
-
-```java
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, AccessLogger accessLogger, HttpExchangesProperties properties)
-			throws Exception {
-		return http
-				// ....
-				.addFilterAfter(
-						new HttpExchangesFilter(accessLogger,
-								properties.getRecording().getInclude()),
-						SecurityContextHolderAwareRequestFilter.class)
-				.build();
-	}
-```
 
 By deafult, only `request_headers`, `response_headers` and `time_taken` are recorded.
 In order to log all attributes, you also need to configure `management.httpexchanges.recording.include` as follows:
