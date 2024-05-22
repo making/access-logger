@@ -5,7 +5,7 @@ Access Logger as a HttpExchangeRepository implementation
 <dependency>
 	<groupId>am.ik.access-logger</groupId>
 	<artifactId>access-logger</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 </dependency>
 <!-- Spring Boot Actuator is also required -->
 <dependency>
@@ -64,7 +64,7 @@ AccessLogger accessLogger = AccessLoggerBuilder.accessLogger()
 	// Customize log message
 	.logCustomizer((builder, exchange) -> {})
 	// Customize logging Event
-	.loggingEventBuilderCustomizer((builder, exchange) -> builder)
+	.loggingEventCustomizer((builder, exchange) -> builder)
 	// Filter the log message depending on the http request
 	.filter(httpExchange -> {
 		final String uri = httpExchange.getRequest().getUri().getPath();
