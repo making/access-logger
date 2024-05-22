@@ -211,7 +211,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger()
 			.addKeyValues(true)
 			.emptyLogMessage(true)
-			.loggingEventBuilderCustomizer((builder, exchange) -> builder.addKeyValue("x-request-id",
+			.loggingEventCustomizer((builder, exchange) -> builder.addKeyValue("x-request-id",
 					exchange.getRequest().getHeaders().get("x-request-id").get(0)))
 			.build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),

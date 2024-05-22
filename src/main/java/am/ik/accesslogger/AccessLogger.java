@@ -37,7 +37,7 @@ public class AccessLogger implements HttpExchangeRepository {
 	private final boolean emptyLogMessage;
 
 	@Nullable
-	private final BiFunction<LoggingEventBuilder, HttpExchange, LoggingEventBuilder> loggingEventBuilderCustomizer;
+	private final BiFunction<LoggingEventBuilder, HttpExchange, LoggingEventBuilder> loggingEventCustomizer;
 
 	private final Logger log;
 
@@ -45,7 +45,7 @@ public class AccessLogger implements HttpExchangeRepository {
 	public AccessLogger(@Nullable Predicate<HttpExchange> filter,
 			@Nullable BiConsumer<StringBuilder, HttpExchange> logCustomizer, @Nullable String loggerName,
 			@Nullable Level level, boolean addKeyValues, boolean emptyLogMessage,
-			@Nullable BiFunction<LoggingEventBuilder, HttpExchange, LoggingEventBuilder> loggingEventBuilderCustomizer) {
+			@Nullable BiFunction<LoggingEventBuilder, HttpExchange, LoggingEventBuilder> loggingEventCustomizer) {
 		if (emptyLogMessage && !addKeyValues) {
 			throw new IllegalArgumentException("'emptyLogMessage' can be true only when 'addKeyValues' is true.");
 		}
@@ -55,7 +55,7 @@ public class AccessLogger implements HttpExchangeRepository {
 		this.level = Objects.requireNonNullElse(level, Level.INFO);
 		this.addKeyValues = addKeyValues;
 		this.emptyLogMessage = emptyLogMessage;
-		this.loggingEventBuilderCustomizer = loggingEventBuilderCustomizer;
+		this.loggingEventCustomizer = loggingEventCustomizer;
 	}
 
 	public AccessLogger(@Nullable Predicate<HttpExchange> filter) {
@@ -150,8 +150,8 @@ public class AccessLogger implements HttpExchangeRepository {
 		if (this.logCustomizer != null) {
 			this.logCustomizer.accept(log, httpExchange);
 		}
-		if (this.loggingEventBuilderCustomizer != null) {
-			eventBuilder = this.loggingEventBuilderCustomizer.apply(eventBuilder, httpExchange);
+		if (this.loggingEventCustomizer != null) {
+			eventBuilder = this.loggingEventCustomizer.apply(eventBuilder, httpExchange);
 		}
 		eventBuilder.log(log.toString().trim());
 	}
