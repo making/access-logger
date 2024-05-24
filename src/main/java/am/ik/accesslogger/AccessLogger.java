@@ -3,11 +3,13 @@ package am.ik.accesslogger;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jilt.Builder;
 import org.slf4j.Logger;
@@ -84,7 +86,7 @@ public class AccessLogger implements HttpExchangeRepository {
 		final Response response = httpExchange.getResponse();
 		final Principal principal = httpExchange.getPrincipal();
 		final Duration timeTaken = httpExchange.getTimeTaken();
-		final Map<String, List<String>> headers = request.getHeaders();
+		final Map<String, List<String>> headers = caseInsensitive(request.getHeaders());
 		final StringBuilder log = new StringBuilder();
 		final String remoteAddress = request.getRemoteAddress();
 		LoggingEventBuilder eventBuilder = this.log.atLevel(this.level);
@@ -154,6 +156,26 @@ public class AccessLogger implements HttpExchangeRepository {
 			eventBuilder = this.loggingEventCustomizer.apply(eventBuilder, httpExchange);
 		}
 		eventBuilder.log(log.toString().trim());
+	}
+
+	public static <T> Map<String, T> caseInsensitive(Map<String, T> map) {
+		return map.entrySet().stream().map(entry -> new Map.Entry<String, T>() {
+
+			@Override
+			public String getKey() {
+				return entry.getKey().toLowerCase(Locale.US);
+			}
+
+			@Override
+			public T getValue() {
+				return entry.getValue();
+			}
+
+			@Override
+			public T setValue(T value) {
+				return entry.setValue(value);
+			}
+		}).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 }
