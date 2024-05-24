@@ -131,7 +131,8 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().addKeyValues(true).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of(HttpHeaders.USER_AGENT, List.of("mock"), "referer", List.of("https://google.com"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"), HttpHeaders.REFERER,
+								List.of("https://google.com"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
