@@ -5,7 +5,7 @@ Access Logger as a HttpExchangeRepository implementation
 <dependency>
 	<groupId>am.ik.access-logger</groupId>
 	<artifactId>access-logger</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 </dependency>
 <!-- Spring Boot Actuator is also required -->
 <dependency>
