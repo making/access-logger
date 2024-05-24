@@ -16,6 +16,7 @@ import org.springframework.boot.test.json.BasicJsonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,7 +31,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -51,7 +52,7 @@ class AccessLoggerTest {
 			.build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"), "x-request-id", List.of("xyz"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"), "x-request-id", List.of("xyz"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -69,7 +70,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().level(Level.DEBUG).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -87,7 +88,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().loggerName("ACCESS_LOG").build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -105,7 +106,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().addKeyValues(true).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -130,7 +131,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().addKeyValues(true).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"), "referer", List.of("https://google.com"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"), "referer", List.of("https://google.com"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -156,7 +157,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().addKeyValues(true).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), new Principal("admin"), null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -182,7 +183,7 @@ class AccessLoggerTest {
 		AccessLogger accessLogger = AccessLoggerBuilder.accessLogger().addKeyValues(true).emptyLogMessage(true).build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
@@ -216,7 +217,7 @@ class AccessLoggerTest {
 			.build();
 		HttpExchange httpExchange = new HttpExchange(Instant.parse("2024-05-16T00:00:00Z"),
 				new HttpExchange.Request(URI.create("https://example.com"), "127.0.0.1", "GET",
-						Map.of("user-agent", List.of("mock"), "x-request-id", List.of("xyz"))),
+						Map.of(HttpHeaders.USER_AGENT, List.of("mock"), "x-request-id", List.of("xyz"))),
 				new HttpExchange.Response(200, Map.of()), null, null, Duration.ofSeconds(1));
 		accessLogger.add(httpExchange);
 		JsonContent<Object> content = json.from(output.getOut());
